@@ -1,0 +1,43 @@
+%% Casos de uso corregidos - Sistema Iglesia Semana 2 (Django + MySQL)
+%% Admin hereda todo | Secretaria: miembros+eventos+asistencia | Inventario: equipos+mantenimiento
+flowchart LR
+    ADMIN([Administrador])
+    SEC([Secretaria])
+    INV([Encargado de inventario])
+
+    subgraph SISTEMA[Sistema Web Iglesia]
+        direction TB
+        LOGIN(Iniciar sesion)
+        USU(Gestionar usuarios)
+        MIE(Gestionar miembros\n+ familias y ministerios)
+        EVE(Gestionar eventos)
+        ASI(Registrar asistencia)
+        INVE(Gestionar inventario equipos)
+        MANT(Registrar mantenimiento)
+        REP(Consultar reportes)
+    end
+
+    ADMIN --- LOGIN
+    SEC --- LOGIN
+    INV --- LOGIN
+
+    ADMIN --> USU
+    ADMIN --> MIE
+    ADMIN --> EVE
+    ADMIN --> ASI
+    ADMIN --> INVE
+    ADMIN --> MANT
+    ADMIN --> REP
+
+    SEC --> MIE
+    SEC --> EVE
+    SEC --> ASI
+    SEC -. acotado .-> REP
+
+    INV --> INVE
+    INV --> MANT
+    INV -. acotado .-> REP
+
+    EVE -. include .-> ASI
+    REP -. extend miembros .-> MIE
+    REP -. extend inventario .-> INVE

@@ -1,0 +1,21 @@
+# Python / Django
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+db.sqlite3
+staticfiles/
+media/
+
+# Secrets (nunca commitear claves: ver .env.example)
+# .env ya ignorado arriba
+
+# OS / editores
+Thumbs.db
+.vscode/
+.idea/
+
+# Word/temporales de Office
+~$*.docx
+~$*.xlsx

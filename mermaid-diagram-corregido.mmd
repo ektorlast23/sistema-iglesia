@@ -1,0 +1,61 @@
+%% Sistema Iglesia - Modelo EER corregido Semana 2 (Django + MySQL)
+%% BD: cursor_demo (dev) / iglesia_db (produccion) | 6 tablas | N-M con puente
+erDiagram
+    FAMILIAS {
+        int id PK "AUTO_INCREMENT"
+        string nombre_familia "UQ NOT NULL"
+        string direccion "NULL"
+        string telefono "NULL"
+        date fecha_registro "NULL"
+    }
+    MINISTERIOS {
+        int id PK "AUTO_INCREMENT"
+        string nombre "UQ NOT NULL"
+        string descripcion "NULL"
+        boolean activo "DEFAULT 1"
+    }
+    MIEMBROS {
+        int id PK "AUTO_INCREMENT"
+        string nombres "NOT NULL"
+        string apellidos "NOT NULL"
+        date fecha_nacimiento "NULL"
+        string sexo "ENUM M/F NULL"
+        string telefono "NULL"
+        string email "NULL"
+        string direccion "NULL"
+        int familia_id FK "NULL"
+        date fecha_ingreso "NULL"
+        string estado "ENUM activo/inactivo/visitante"
+    }
+    MIEMBROS_MINISTERIOS {
+        int miembro_id PK, FK "NOT NULL"
+        int ministerio_id PK, FK "NOT NULL"
+        date fecha_asignacion "NULL"
+        string rol "NULL"
+    }
+    EVENTOS {
+        int id PK "AUTO_INCREMENT"
+        string nombre "NOT NULL"
+        string descripcion "NULL"
+        date fecha "NOT NULL"
+        string hora_inicio "TIME NULL"
+        string hora_fin "TIME NULL"
+        string lugar "NULL"
+        string tipo "culto/grupo/etc NULL"
+        int responsable_id FK "NULL"
+    }
+    ASISTENCIAS {
+        int id PK "AUTO_INCREMENT"
+        int miembro_id FK "NOT NULL"
+        int evento_id FK "NOT NULL"
+        date fecha "NOT NULL"
+        boolean presente "DEFAULT 1"
+        string observaciones "NULL"
+    }
+
+    FAMILIAS ||--o{ MIEMBROS : "1-N tiene (familia_id SET NULL)"
+    MIEMBROS ||--o{ MIEMBROS_MINISTERIOS : "1-N participa (CASCADE)"
+    MINISTERIOS ||--o{ MIEMBROS_MINISTERIOS : "1-N incluye (CASCADE)"
+    MIEMBROS ||--o{ EVENTOS : "1-N responsable (SET NULL)"
+    MIEMBROS ||--o{ ASISTENCIAS : "1-N registra (CASCADE)"
+    EVENTOS ||--o{ ASISTENCIAS : "1-N contiene (CASCADE)"
