@@ -39,12 +39,21 @@
 - Semana 3 según plan general: UI/UX wireframes (aún no iniciada).
 - Reconstruir paquete: `venv\Scripts\python.exe build_semana02.py`.
 
-## 8. Semana 4 — Estructura base (02-oct-2026, en curso)
-- Git init en `MySQLprject/` + `.gitignore` (venv, .env, pycache). SIN commit inicial (espera orden explícita).
+## 8. Semana 4 — Estructura base (02-oct-2026, cerrada)
+- Git init en `MySQLprject/` + `.gitignore` (venv, .env, pycache). Commit inicial `68ebcb1` (identidad ektorlast23).
 - venv actualizado: **Django 5.2.17 LTS** (downgrade desde 6.1.1: Django 6.1 exige MySQL 8.4+, servidor es 8.0.46).
 - Proyecto en `sistema_iglesia/` (config + apps: miembros, inventario, eventos, reportes) + `.env.example` (credenciales por entorno, nunca commitear).
-- Settings: PyMySQL shim en `config/__init__.py`, DATABASES MySQL por env (dev cursor_demo), idioma es, zona America/El_Salvador, DEFAULT_AUTO_FIELD=AutoField (coincide con INT existentes).
-- Models miembros/eventos con db_table exactas al schema (familias, ministerios, miembros, miembros_ministerios, eventos, asistencias) + admin registrado con inlines.
+- Settings: PyMySQL shim en `config/__init__.py`, DATABASES MySQL por env (dev cursor_demo), idioma es, zona America/El_Salvador, DEFAULT_AUTO_FIELD=AutoField (coincide con INT existentes), ALLOWED_HOSTS por env (incluye testserver).
+- Models miembros/eventos con db_table exactas al schema (familias, ministerios, miembros, miembros_ministerios, eventos, asistencias). Admin revertido a stubs: **SIN CRUD esta semana** (orden explícita; CRUD = Sem 5+).
+- Home `/` con navegación inicial (cards por módulo con semana asignada) + `/admin/`. Verificado: `GET / → 200` y ORM `Miembro.objects.count() == 2` (solo SELECT).
 - Verificado: `manage.py check` limpio + `makemigrations` (0001 miembros/eventos) + `sqlmigrate` coincide con schema. **NO se corrió `migrate`** (escribiría tablas auth + choca con tablas existentes; requiere --fake-initial o iglesia_db fresca en Sem 5).
 - Diferencias Django vs schema manual (documentadas, funcionalmente equivalentes): puente con `id` propio (manual usa PK compuesta), TEXT→longtext, TINYINT→bool, ENUM→varchar+choices.
 - Semana 3 se hizo fuera de sesión: `SEMANA_03/` + `Paquete_Semana03.zip` (wireframes Login/Dashboard/Miembros/Familias/Ministerios/Eventos/Asistencia/Inventario/Reportes + validación + informe).
+
+## 9. Semana 4 — Cierre con informe (02-oct-2026, cerrada)
+- `SEMANA_04/` formato espejo SEMANA_03: 01_ENTORNO (versiones.txt), 02_REPOSITORIO (git_log.txt + git_status.txt),
+  03_ESTRUCTURA (arbol_proyecto.txt + home.png + admin.png), 04_EVIDENCIAS_BD (tablas_cursor_demo.txt),
+  05_INFORME (Informe_Semana_04.docx con tabla Lun-Vie + 2 capturas). `Paquete_Semana04.zip` verificado OK (8 archivos).
+- Evidencias: Python 3.14.6, Django 5.2.17, Git 2.54.0, MySQL 8.0.46; commit 68ebcb1; GET / 200; ORM 2 miembros;
+  BD = cursor_demo (gestion_iglesia/iglesia_db pendientes de root, declarado en informe).
+- Builder: `build_semana04.py` (regenera informe + ZIP). Servidor dev dejado corriendo en 127.0.0.1:8000 al cierre.
