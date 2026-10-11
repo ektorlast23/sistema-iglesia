@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titulo %}{{ miembro }} - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>{{ miembro.nombres }} {{ miembro.apellidos }}</h1>
+<p><span class="badge {{ miembro.estado }}">{{ miembro.get_estado_display }}</span></p>
+<table>
+  <tr><th>Campo</th><th>Valor</th></tr>
+  <tr><td>Fecha de nacimiento</td><td>{{ miembro.fecha_nacimiento|default:"—" }}</td></tr>
+  <tr><td>Teléfono</td><td>{{ miembro.telefono|default:"—" }}</td></tr>
+  <tr><td>Correo electrónico</td><td>{{ miembro.email|default:"—" }}</td></tr>
+  <tr><td>Dirección</td><td>{{ miembro.direccion|default:"—" }}</td></tr>
+  <tr><td>Familia</td><td>{{ miembro.familia|default:"Sin familia" }}</td></tr>
+  <tr><td>Fecha de registro</td><td>{{ miembro.fecha_ingreso|default:"—" }}</td></tr>
+</table>
+<p>
+  <a class="boton" href="{% url 'miembros:editar' miembro.pk %}">Editar</a>
+  <a class="cancelar" href="{% url 'miembros:eliminar' miembro.pk %}">Dar de baja</a>
+  <a href="{% url 'miembros:lista' %}">Volver a la lista</a>
+</p>
+{% endblock %}

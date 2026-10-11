@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Dar de baja - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Confirmar baja</h1>
+<p>¿Dar de baja a <strong>{{ miembro }}</strong>?</p>
+<p>La baja es controlada: el registro se conserva y pasa a estado <strong>inactivo</strong>.</p>
+<form method="post">
+  {% csrf_token %}
+  <button class="boton" type="submit">Confirmar baja</button>
+  <a class="cancelar" href="{% url 'miembros:detalle' miembro.pk %}">Cancelar</a>
+</form>
+{% endblock %}

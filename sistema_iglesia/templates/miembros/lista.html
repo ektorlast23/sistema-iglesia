@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Miembros - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Miembros</h1>
+<p><a class="boton" href="{% url 'miembros:registrar' %}">+ Nuevo miembro</a></p>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Estado</th></tr>
+  </thead>
+  <tbody>
+    {% for m in miembros %}
+    <tr>
+      <td>{{ m.id|stringformat:"02d" }}</td>
+      <td><a href="{% url 'miembros:detalle' m.pk %}">{{ m.nombres }} {{ m.apellidos }}</a></td>
+      <td>{{ m.telefono|default:"—" }}</td>
+      <td><span class="badge {{ m.estado }}">{{ m.get_estado_display }}</span></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">No hay miembros registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
