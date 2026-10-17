@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Devoluciones - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Devoluciones de equipos</h1>
+<p>Préstamos activos pendientes de devolución.</p>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Equipo</th><th>Miembro</th><th>Cantidad</th>
+        <th>Préstamo</th><th>Devolución prevista</th><th>Acción</th></tr>
+  </thead>
+  <tbody>
+    {% for p in prestamos %}
+    <tr>
+      <td>{{ p.id|stringformat:"02d" }}</td>
+      <td>{{ p.equipo }}</td>
+      <td>{{ p.miembro }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>{{ p.fecha_prestamo }}</td>
+      <td>{{ p.fecha_devolucion_prevista }}{% if p.atrasado %} <strong>(atrasado)</strong>{% endif %}</td>
+      <td>
+        <form method="post" style="display:inline">
+          {% csrf_token %}
+          <input type="hidden" name="prestamo_id" value="{{ p.pk }}">
+          <button class="boton" type="submit">Registrar devolución</button>
+        </form>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">No hay préstamos activos.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p><a class="cancelar" href="{% url 'inventario:prestamos' %}">Ir a préstamos</a></p>
+{% endblock %}

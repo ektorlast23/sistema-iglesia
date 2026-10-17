@@ -57,3 +57,21 @@
 - Evidencias: Python 3.14.6, Django 5.2.17, Git 2.54.0, MySQL 8.0.46; commit 68ebcb1; GET / 200; ORM 2 miembros;
   BD = cursor_demo (gestion_iglesia/iglesia_db pendientes de root, declarado en informe).
 - Builder: `build_semana04.py` (regenera informe + ZIP). Servidor dev dejado corriendo en 127.0.0.1:8000 al cierre.
+
+## 10. Semana 5 — CRUD de Miembros (sesión aparte, cerrada)
+- CRUD completo de miembros en `miembros/` (views por función: lista/registrar/detalle/editar/eliminar), `MiembroForm` (ModelForm 8 campos + familia), `urls.py` con namespace `miembros`, admin registrado.
+- Eliminación = **baja lógica** (`estado='inactivo'`), validaciones: obligatorios, email, teléfono como texto; 404 ante id inexistente.
+- Plantillas en `templates/miembros/` (lista, formulario, detalle, confirmar_eliminacion) sobre `base.html` (layout Sem 3) + `home.html`.
+- Pruebas: 8/8 aceptación (nota: se ejecutaron sin documentar cómo, dado que `Nuclearblast` no puede crear `test_*`).
+- `migrate` ejecutado en `cursor_demo` con `--fake-initial` (miembros+eventos FAKED; tablas Sem 2 intactas). Tablas auth_* + django_migrations ya presentes.
+- Commits: `b8df53d` (CRUD miembros) y `7f374c0` (evidencias PDF formales: modelo/pruebas/persistencia). `SEMANA_05/` + `Paquete_Semana05.zip` (txt/png reemplazados por PDF).
+
+## 11. Semana 6 — Módulo de Inventario (16-oct-2026, cerrada)
+- App `inventario`: modelos **Equipo** (nombre, categoría, descripción, cantidad, estado, ubicación, fecha_registro) y **Prestamo** (equipo FK, miembro FK PROTECT, cantidad, fechas, estado, observaciones). Migración `inventario.0001_initial`; tablas `equipos` y `prestamos` verificadas con DESCRIBE en MySQL.
+- Disponibilidad **calculada** (`cantidad − prestamos activos`), no almacenada → evita descuadres. Categoría con choices: instrumento/sonido/mobiliario/recurso.
+- CRUD + búsqueda: `lista` (busca por nombre/categoría/ubicación), `registrar`, `detalle` (con historial), `editar`; flujo `prestamos`/`devoluciones` con validación de existencias y fechas (no prestar más que lo disponible). URLs bajo `inventario/` (namespace `inventario`) conectadas en `config/urls.py`; nav en `base.html`/`home.html`.
+- Plantillas en `templates/inventario/` (lista, formulario, detalle, prestamos, devoluciones). Decisión: `templates/` (consistente) en vez de `plantillas/`.
+- **Pruebas en SQLite**: `config/settings.py` detecta `test` en `sys.argv` y usa SQLite en memoria (el usuario MySQL no tiene CREATE → no puede crear `test_cursor_demo`). Producción sigue en MySQL. `manage.py test inventario` → **15/15 OK**.
+- Verificación en vivo: GET 200 (lista/nuevo/detalle/prestamos/devoluciones); POST nuevo 302; POST préstamo 302 (disponible 4→2); exceso → 200 rechazado; 404 id inexistente; devolución 302 (estado `devuelto`, stock liberado).
+- Entregables: `SEMANA_06/` (01_MODELO, 02_CRUD con HTML real, 03_PRESTAMOS, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana06.zip`. Builders: `build_semana06.py`, `capturar_semana06.py`.
+- Semana 7 planificada: módulo de Eventos y Asistencia.

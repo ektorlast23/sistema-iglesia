@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block titulo %}{{ equipo.nombre }} - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>{{ equipo.nombre }}</h1>
+<table>
+  <tr><th>Categoría</th><td>{{ equipo.get_categoria_display }}</td></tr>
+  <tr><th>Descripción</th><td>{{ equipo.descripcion|default:"—" }}</td></tr>
+  <tr><th>Cantidad total</th><td>{{ equipo.cantidad }}</td></tr>
+  <tr><th>Cantidad prestada</th><td>{{ equipo.cantidad_prestada }}</td></tr>
+  <tr><th>Disponible</th><td>{{ equipo.cantidad_disponible }}</td></tr>
+  <tr><th>Estado</th><td><span class="badge {{ equipo.estado }}">{{ equipo.get_estado_display }}</span></td></tr>
+  <tr><th>Ubicación</th><td>{{ equipo.ubicacion|default:"—" }}</td></tr>
+  <tr><th>Fecha de registro</th><td>{{ equipo.fecha_registro }}</td></tr>
+</table>
+
+<p>
+  <a class="boton" href="{% url 'inventario:editar' equipo.pk %}">Editar</a>
+  <a class="cancelar" href="{% url 'inventario:lista' %}">Volver al inventario</a>
+</p>
+
+<h2>Historial de préstamos</h2>
+<table>
+  <thead><tr><th>Fecha</th><th>Miembro</th><th>Cantidad</th><th>Devolución prevista</th><th>Estado</th></tr></thead>
+  <tbody>
+    {% for p in prestamos %}
+    <tr>
+      <td>{{ p.fecha_prestamo }}</td>
+      <td>{{ p.miembro }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>{{ p.fecha_devolucion_prevista }}</td>
+      <td><span class="badge {{ p.estado }}">{{ p.get_estado_display }}</span>{% if p.atrasado %} (atrasado){% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Sin préstamos registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

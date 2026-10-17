@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block titulo %}Préstamos - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Préstamos de equipos</h1>
+
+<h2>Registrar préstamo</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="boton" type="submit">Registrar préstamo</button>
+  <a class="cancelar" href="{% url 'inventario:lista' %}">Volver al inventario</a>
+</form>
+
+<h2>Préstamos registrados</h2>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Equipo</th><th>Miembro</th><th>Cantidad</th>
+        <th>Préstamo</th><th>Devolución prevista</th><th>Estado</th></tr>
+  </thead>
+  <tbody>
+    {% for p in prestamos %}
+    <tr>
+      <td>{{ p.id|stringformat:"02d" }}</td>
+      <td><a href="{% url 'inventario:detalle' p.equipo.pk %}">{{ p.equipo }}</a></td>
+      <td>{{ p.miembro }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>{{ p.fecha_prestamo }}</td>
+      <td>{{ p.fecha_devolucion_prevista }}</td>
+      <td><span class="badge {{ p.estado }}">{{ p.get_estado_display }}</span>{% if p.atrasado %} (atrasado){% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="7">Aún no hay préstamos registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

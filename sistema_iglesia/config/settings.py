@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,17 +79,27 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database: MySQL via PyMySQL (ver config/__init__.py). Credenciales por entorno.
 # BD dev: cursor_demo | BD prod futura: iglesia_db (pendiente clave root).
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_DB', 'cursor_demo'),
-        'USER': os.environ.get('MYSQL_USER', 'Nuclearblast'),
-        'PASSWORD': os.environ.get('MYSQL_PASS', ''),
-        'HOST': os.environ.get('MYSQL_HOST', '127.0.0.1'),
-        'PORT': os.environ.get('MYSQL_PORT', '3306'),
-        'OPTIONS': {'charset': 'utf8mb4'},
+# Al correr 'manage.py test' se usa SQLite en memoria: el usuario MySQL solo
+# tiene permisos sobre cursor_demo y no puede crear la BD de pruebas test_*.
+if "test" in sys.argv:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db_test.sqlite3",
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ.get('MYSQL_DB', 'cursor_demo'),
+            'USER': os.environ.get('MYSQL_USER', 'Nuclearblast'),
+            'PASSWORD': os.environ.get('MYSQL_PASS', ''),
+            'HOST': os.environ.get('MYSQL_HOST', '127.0.0.1'),
+            'PORT': os.environ.get('MYSQL_PORT', '3306'),
+            'OPTIONS': {'charset': 'utf8mb4'},
+        }
+    }
 
 
 # Password validation
