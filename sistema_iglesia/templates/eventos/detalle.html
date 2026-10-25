@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}{{ evento.nombre }} - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>{{ evento.nombre }}</h1>
+<table>
+  <tr><th>Descripción</th><td>{{ evento.descripcion|default:"—" }}</td></tr>
+  <tr><th>Fecha</th><td>{{ evento.fecha|date:"d/m/Y" }}</td></tr>
+  <tr><th>Hora de inicio</th><td>{% if evento.hora_inicio %}{{ evento.hora_inicio|time:"H:i" }}{% else %}—{% endif %}</td></tr>
+  <tr><th>Hora de fin</th><td>{% if evento.hora_fin %}{{ evento.hora_fin|time:"H:i" }}{% else %}—{% endif %}</td></tr>
+  <tr><th>Lugar</th><td>{{ evento.lugar|default:"—" }}</td></tr>
+  <tr><th>Tipo</th><td>{{ evento.tipo|default:"—" }}</td></tr>
+  <tr><th>Responsable</th><td>{{ evento.responsable|default:"—" }}</td></tr>
+</table>
+
+<p>
+  <a class="boton" href="{% url 'eventos:editar' evento.pk %}">Editar evento</a>
+  <a class="boton" href="{% url 'eventos:asistencia_registrar' evento.pk %}">Registrar asistencia</a>
+  <a class="boton" href="{% url 'eventos:lista_asistencias' evento.pk %}">Ver todas las asistencias</a>
+  <a class="cancelar" href="{% url 'eventos:eliminar' evento.pk %}">Eliminar evento</a>
+</p>
+
+<h2>Asistencias ({{ total_asistentes }} asistente{{ total_asistentes|pluralize:"s" }})</h2>
+<table>
+  <thead>
+    <tr><th>ID</th><th>Miembro</th><th>Fecha</th><th>Estado</th><th>Observaciones</th><th>Acciones</th></tr>
+  </thead>
+  <tbody>
+    {% for a in asistencias %}
+    <tr>
+      <td>{{ a.id|stringformat:"02d" }}</td>
+      <td>{{ a.miembro }}</td>
+      <td>{{ a.fecha|date:"d/m/Y" }}</td>
+      <td>{{ a.get_estado_display }}</td>
+      <td>{{ a.observaciones|default:"—" }}</td>
+      <td><a href="{% url 'eventos:asistencia_editar' a.pk %}">Editar</a></td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">Sin asistencias registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<p><a class="cancelar" href="{% url 'eventos:lista' %}">Volver a eventos</a></p>
+{% endblock %}

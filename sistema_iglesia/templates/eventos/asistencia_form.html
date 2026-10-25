@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block titulo %}Registrar asistencia - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Registrar asistencia</h1>
+<p>Evento: <strong>{{ evento.nombre }}</strong> — {{ evento.fecha|date:"d/m/Y" }}
+  {% if evento.lugar %}({{ evento.lugar }}){% endif %}</p>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="boton" type="submit">{{ accion }}</button>
+  <a class="cancelar" href="{% url 'eventos:detalle' evento.pk %}">Cancelar</a>
+</form>
+{% endblock %}

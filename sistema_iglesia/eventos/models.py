@@ -23,10 +23,17 @@ class Evento(models.Model):
 
 
 class Asistencia(models.Model):
+    ESTADO_CHOICES = [
+        ("presente", "Presente"),
+        ("ausente", "Ausente"),
+        ("justificado", "Justificado"),
+        ("retraso", "Retraso"),
+    ]
+
     miembro = models.ForeignKey(Miembro, on_delete=models.CASCADE, related_name="asistencias")
     evento = models.ForeignKey(Evento, on_delete=models.CASCADE, related_name="asistencias")
     fecha = models.DateField()
-    presente = models.BooleanField(default=True)
+    estado = models.CharField(max_length=15, choices=ESTADO_CHOICES, default="presente")
     observaciones = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -34,4 +41,4 @@ class Asistencia(models.Model):
         unique_together = ("miembro", "evento")
 
     def __str__(self):
-        return f"{self.miembro} en {self.evento}: {'presente' if self.presente else 'ausente'}"
+        return f"{self.miembro} en {self.evento}: {self.get_estado_display()}"

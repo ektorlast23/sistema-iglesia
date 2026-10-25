@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}Editar asistencia - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Editar asistencia</h1>
+<table>
+  <tr><th>Miembro</th><td>{{ asistencia.miembro }}</td></tr>
+  <tr><th>Evento</th><td>{{ asistencia.evento }}</td></tr>
+  <tr><th>Fecha</th><td>{{ asistencia.fecha|date:"d/m/Y" }}</td></tr>
+</table>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="boton" type="submit">{{ accion }}</button>
+  <a class="cancelar" href="{% url 'eventos:lista_asistencias' asistencia.evento_id %}">Cancelar</a>
+</form>
+{% endblock %}

@@ -75,3 +75,17 @@
 - Verificación en vivo: GET 200 (lista/nuevo/detalle/prestamos/devoluciones); POST nuevo 302; POST préstamo 302 (disponible 4→2); exceso → 200 rechazado; 404 id inexistente; devolución 302 (estado `devuelto`, stock liberado).
 - Entregables: `SEMANA_06/` (01_MODELO, 02_CRUD con HTML real, 03_PRESTAMOS, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana06.zip`. Builders: `build_semana06.py`, `capturar_semana06.py`.
 - Semana 7 planificada: módulo de Eventos y Asistencia.
+
+## 12. Semana 7 — Gestión de eventos y asistencia (24-oct-2026, cerrada)
+- **Modelo**: `Asistencia` ampliado con `estado` (choices `presente`/`ausente`/`justificado`/`retraso`, default `presente`) y `unique_together (miembro, evento)`; `__str__` devuelve "miembro en evento: estado". `Evento` mantiene nombre, descripción, fecha, hora_inicio/fin, lugar, tipo y responsable (FK `miembros`, SET NULL).
+- **Migración 0002** (`eventos.0002_remove_asistencia_presente_asistencia_estado`): `AddField estado` → `RunPython` `presente_a_estado` (presente=True→`presente`, False→`ausente`) → `RemoveField presente`, con reversión `estado_a_presente`. Datos históricos de `asistencias` preservados.
+- **Formularios** (`eventos/forms.py`): `EventoForm` (8 campos, `hora_fin >= hora_inicio`, responsable solo miembros `activo`), `AsistenciaForm` (miembro activo, evento preseleccionado, fecha por defecto hoy, valida duplicado en `clean()`), `AsistenciaEditarForm` (solo estado + observaciones).
+- **Vistas** (`eventos/views.py`): `lista` (búsqueda por nombre/lugar/tipo), `registrar`, `detalle` (tabla + total asistentes), `editar`, `eliminar` (confirmación), `asistencia_registrar`, `lista_asistencias`, `asistencia_editar`, `asistencia_consulta_miembro` (selector + historial, 404 si el miembro no existe).
+- **Rutas** (namespace `eventos`, montado en `config/urls.py` como `eventos/`):
+  - `GET /eventos/` · `GET|POST /eventos/nuevo/` · `GET /eventos/<pk>/` · `GET|POST /eventos/<pk>/editar/` · `GET|POST /eventos/<pk>/eliminar/`
+  - `GET|POST /eventos/<evento_id>/asistencia/nuevo/` · `GET /eventos/<evento_id>/asistencias/` · `GET|POST /eventos/asistencia/<pk>/editar/` · `GET /eventos/asistencias/miembro/?miembro_id=<pk>`
+- **Templates** `templates/eventos/` (lista, formulario, detalle, confirmar_eliminacion, asistencia_form, asistencias_lista, asistencia_editar, asistencias_miembro) sobre `base.html`; navegación actualizada en `base.html`/`home.html`.
+- **Pruebas**: `eventos/tests.py` con **28 pruebas** (modelos, formularios, vistas) sobre SQLite en memoria → `manage.py test eventos -v 2` = **28/28 OK**. Incluye duplicado de asistencia (200, no crea), 404 de evento/miembro inexistente, total de asistentes y filtro por miembro.
+- **Verificación en vivo** (runserver 127.0.0.1:8010, BD `cursor_demo`): 7 páginas GET → 200 con HTML real guardado en `SEMANA_07/02_CRUD/`.
+- **Entregables**: `SEMANA_07/` (01_MODELO, 02_CRUD, 03_ASISTENCIA, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana07.zip` (18 archivos) + `build_semana07.py` (regenera informe docx, PDFs de evidencia y ZIP).
+- **Semana 8 planificada**: módulo de Reportes (asistencias por evento/miembro, eventos más concurridos, exportación de resultados).

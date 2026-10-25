@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>{{ titulo }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="boton" type="submit">{{ accion }}</button>
+  <a class="cancelar" href="{% url 'eventos:lista' %}">Cancelar</a>
+</form>
+{% endblock %}

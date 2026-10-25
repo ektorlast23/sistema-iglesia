@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Confirmar eliminación - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Confirmar eliminación</h1>
+<p>¿Eliminar el evento <strong>{{ evento.nombre }}</strong> del {{ evento.fecha|date:"d/m/Y" }}?</p>
+<p>También se eliminarán las asistencias registradas para este evento.</p>
+<form method="post">
+  {% csrf_token %}
+  <button class="boton" type="submit">Confirmar eliminación</button>
+  <a class="cancelar" href="{% url 'eventos:detalle' evento.pk %}">Cancelar</a>
+</form>
+{% endblock %}
