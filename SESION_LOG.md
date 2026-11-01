@@ -89,3 +89,15 @@
 - **Verificación en vivo** (runserver 127.0.0.1:8010, BD `cursor_demo`): 7 páginas GET → 200 con HTML real guardado en `SEMANA_07/02_CRUD/`.
 - **Entregables**: `SEMANA_07/` (01_MODELO, 02_CRUD, 03_ASISTENCIA, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana07.zip` (18 archivos) + `build_semana07.py` (regenera informe docx, PDFs de evidencia y ZIP).
 - **Semana 8 planificada**: módulo de Reportes (asistencias por evento/miembro, eventos más concurridos, exportación de resultados).
+
+## 13. Semana 8 — Módulo de Reportes y Estadísticas (31-oct-2026, cerrada)
+- **Alcance**: cuatro reportes sobre la BD real, con filtros, pantalla y descarga en PDF/Excel. App `reportes` (antes vacía).
+- **Consultas** (`reportes/consultas.py`): `asistencia_por_evento`, `crecimiento_asistencia`, `inventario`, `demografia`. Agregados del ORM (`Count` con `filter=`, `Sum`, `TruncMonth`) para que el mismo código corra en MySQL 8 y SQLite; objeto `Reporte`/`Seccion` común a pantalla y exportación. SQL puro documentado en `reportes/sql/reportes.sql` (10 sentencias) y ejecutado en MySQL en `SEMANA_08/01_CONSULTAS/sql_mysql.txt`.
+- **Asistencia por evento**: desglose presente/ausente/justificado/retraso, total y %; filtros `desde`, `hasta`, `tipo`. **Crecimiento**: serie mensual (3 meses), variación del último mes y top 10 de eventos. **Inventario**: disponibilidad calculada (unidades − préstamos activos − bajas) y préstamos atrasados. **Demografía**: estado, sexo, rangos de edad, familias y ministerios.
+- **Exportación** (`reportes/exportar.py`): PDF con reportlab (portada, resumen, tablas paginadas, gráfico de barras en crecimiento, pie con página) y Excel con openpyxl (hoja Resumen + una hoja por sección, encabezado fijo, autofiltro). Ambas consumen el mismo `Reporte` que la pantalla.
+- **Rutas** (namespace `reportes`, montado como `reportes/`): `/reportes/` · `/reportes/<clave>/` · `/reportes/<clave>/(pdf|xlsx)/`. Navegación actualizada en `base.html`/`home.html`; `home.html` ya no dice "Semanas 5-8".
+- **Datos de demostración**: comando `manage.py cargar_demo` (idempotente) crea 12 miembros, 4 familias, 4 ministerios y los eventos de agosto–octubre 2026 con 184 asistencias; `--limpiar` los retira (marcados con `@demo.local` y descripción "Evento de demostración (Semana 8)"). La BD quedó con 14 miembros, 24 eventos y 184 asistencias.
+- **Pruebas**: `reportes/tests.py` con **36 pruebas** (consultas, vistas, exportación, casos de borde) sobre SQLite en memoria → **36/36 OK**; suite completa **88/88 OK**.
+- **Verificación real** (cliente de Django sobre `cursor_demo`): 7 pantallas → 200; 9 descargas → 200; 404 de reporte inexistente y 400 de formato no soportado. Evidencias en `SEMANA_08/` (01_CONSULTAS, 02_REPORTES, 03_EXPORTACION, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana08.zip` (29 archivos) + `build_semana08.py`.
+- **Hallazgo corregido**: el PDF de cualquier reporte intentaba dibujar el gráfico de crecimiento y fallaba en las tablas de 3 columnas; se agregó el guard por clave y una prueba que exporta los cuatro reportes en ambos formatos.
+- **Semana 9 planificada**: pruebas unitarias y de integración del sistema completo.

@@ -6,14 +6,14 @@
 </head>
 <body>
   <h1>Sistema de Gesti&oacute;n - Iglesia Local</h1>
-  <p>Estructura base Semana 4 (Django + MySQL). Los m&oacute;dulos se desarrollan en Semanas 5-8.</p>
+  <p>M&oacute;dulos de miembros, inventario, eventos y reportes disponibles.</p>
   <nav>
     <ul>
       <li><a href="/admin/">Administraci&oacute;n</a></li>
       <li><a href="{% url 'miembros:lista' %}">Miembros</a></li>
       <li><a href="{% url 'inventario:lista' %}">Inventario</a></li>
       <li><a href="{% url 'eventos:lista' %}">Eventos y Asistencia</a></li>
-      <li>Reportes (Semana 8)</li>
+      <li><a href="{% url 'reportes:indice' %}">Reportes y Estad&iacute;sticas</a></li>
     </ul>
   </nav>
 </body>
