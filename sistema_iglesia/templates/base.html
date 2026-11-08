@@ -17,7 +17,7 @@
     .badge { padding: 2px 8px; border-radius: 8px; color: #fff; font-size: 12px; }
     .activo { background: #2E7D32; } .inactivo { background: #999; } .visitante { background: #1565C0; }
     .disponible { background: #2E7D32; } .mantenimiento { background: #EF6C00; } .baja { background: #999; }
-    .prestado { background: #1565C0; } .devuelto { background: #999; }
+    .prestado { background: #1565C0; } .devuelto { background: #999; } .atrasado { background: #C62828; }
     .messages { list-style: none; padding: 0; }
     .messages li { padding: 8px; margin-bottom: 8px; }
     .success { background: #E8F5E9; border: 1px solid #2E7D32; }
@@ -27,6 +27,29 @@
     form p { margin-bottom: 12px; }
     label { display: block; font-weight: bold; }
     .errorlist { color: #C62828; }
+    h1 { margin-top: 0; }
+    h2 { color: #1F4E79; margin-top: 28px; }
+    .subtitulo { color: #555; margin-top: -8px; }
+    .grid-tarjetas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin: 18px 0; }
+    .tarjeta { border: 1px solid #D6E2F0; border-top: 4px solid #1F4E79; border-radius: 10px; padding: 14px 16px; background: #fff; }
+    .tarjeta .numero { display: block; font-size: 30px; font-weight: bold; color: #1F4E79; line-height: 1.1; }
+    .tarjeta .etiqueta { display: block; font-weight: bold; margin-top: 4px; }
+    .tarjeta .detalle { display: block; color: #666; font-size: 13px; margin-top: 2px; }
+    .tarjeta-alerta { border-top-color: #C62828; }
+    .tarjeta-alerta .numero { color: #C62828; }
+    .aviso { background: #FFF3E0; border: 1px solid #EF6C00; padding: 10px 14px; border-radius: 8px; }
+    .aviso a { color: #1F4E79; font-weight: bold; }
+    .grid-acciones { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .accion { display: block; border: 1px solid #D6E2F0; border-left: 4px solid #1F4E79; border-radius: 8px; padding: 12px 14px; text-decoration: none; color: #222; background: #fff; }
+    .accion:hover { background: #F5F9FF; }
+    .accion strong { display: block; color: #1F4E79; margin-bottom: 4px; }
+    .accion span { color: #555; font-size: 13px; }
+    .dos-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .panel { border: 1px solid #D6E2F0; border-radius: 10px; padding: 16px; background: #fff; }
+    .panel h2 { margin-top: 0; }
+    .vacio { color: #777; font-style: italic; }
+    @media (max-width: 900px) { .dos-columnas { grid-template-columns: 1fr; } .grid-tarjetas { grid-template-columns: repeat(2, 1fr); } .grid-acciones { grid-template-columns: repeat(2, 1fr); } .grid-tarjetas .tarjeta-alerta { grid-column: 1 / -1; } }
+    @media (max-width: 600px) { .grid-tarjetas { grid-template-columns: 1fr; } .grid-acciones { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>

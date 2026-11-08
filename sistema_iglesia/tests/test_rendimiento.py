@@ -129,9 +129,21 @@ class ConsultasConstantes(BaseSistema):
         self.assertEqual(respuesta.status_code, 200)
         self.assertEqual(despues, base, "el reporte de asistencia consulta por evento")
 
-    def test_portada_no_toca_la_base(self):
-        _, consultas = contar_consultas(self.client, reverse("home"))
-        self.assertEqual(consultas, 0)
+    def test_portada_usa_un_numero_fijo_de_consultas(self):
+        # El panel de control muestra conteos y dos listas cortas: debe
+        # resolverse con un numero fijo de consultas, no una por fila.
+        url = reverse("home")
+        _, base = contar_consultas(self.client, url)
+        self.assertLessEqual(base, 12, "la portada hace demasiadas consultas")
+
+        Miembro.objects.bulk_create(
+            [
+                Miembro(nombres=f"Extra{indice}", apellidos="Portada", estado="activo")
+                for indice in range(20)
+            ]
+        )
+        _, despues = contar_consultas(self.client, url)
+        self.assertEqual(despues, base, "la portada consulta por cada fila")
 
 
 class TiemposDeRespuesta(BaseSistema):

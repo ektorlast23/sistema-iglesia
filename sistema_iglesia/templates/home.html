@@ -1,20 +1,122 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <title>Sistema Iglesia - Inicio</title>
-</head>
-<body>
-  <h1>Sistema de Gesti&oacute;n - Iglesia Local</h1>
-  <p>M&oacute;dulos de miembros, inventario, eventos y reportes disponibles.</p>
-  <nav>
-    <ul>
-      <li><a href="/admin/">Administraci&oacute;n</a></li>
-      <li><a href="{% url 'miembros:lista' %}">Miembros</a></li>
-      <li><a href="{% url 'inventario:lista' %}">Inventario</a></li>
-      <li><a href="{% url 'eventos:lista' %}">Eventos y Asistencia</a></li>
-      <li><a href="{% url 'reportes:indice' %}">Reportes y Estad&iacute;sticas</a></li>
-    </ul>
-  </nav>
-</body>
-</html>
+{% extends "base.html" %}
+{% block titulo %}Panel de control - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Panel de control</h1>
+<p class="subtitulo">Resumen de la iglesia al {{ hoy|date:"d/m/Y" }}.</p>
+
+<div class="grid-tarjetas">
+  <div class="tarjeta">
+    <span class="numero">{{ miembros_activos }}</span>
+    <span class="etiqueta">Miembros activos</span>
+    <span class="detalle">de {{ miembros_total }} registrados</span>
+  </div>
+  <div class="tarjeta">
+    <span class="numero">{{ eventos_total }}</span>
+    <span class="etiqueta">Eventos</span>
+    <span class="detalle">con asistencia registrada</span>
+  </div>
+  <div class="tarjeta">
+    <span class="numero">{{ asistencias_total }}</span>
+    <span class="etiqueta">Asistencias</span>
+    <span class="detalle">en todo el historial</span>
+  </div>
+  <div class="tarjeta">
+    <span class="numero">{{ unidades_disponibles }}</span>
+    <span class="etiqueta">Unidades disponibles</span>
+    <span class="detalle">de {{ equipos_total }} equipos</span>
+  </div>
+  <div class="tarjeta {% if prestamos_atrasados %}tarjeta-alerta{% endif %}">
+    <span class="numero">{{ prestamos_activos }}</span>
+    <span class="etiqueta">Préstamos activos</span>
+    <span class="detalle">
+      {% if prestamos_atrasados %}
+        {{ prestamos_atrasados }} atrasado{{ prestamos_atrasados|pluralize }}
+      {% else %}
+        todos en plazo
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+{% if prestamos_atrasados %}
+<p class="aviso">
+  Hay {{ prestamos_atrasados }} préstamo{{ prestamos_atrasados|pluralize }} con la devolución vencida.
+  <a href="{% url 'inventario:devoluciones' %}">Revisar devoluciones</a>
+</p>
+{% endif %}
+
+<h2>Accesos rápidos</h2>
+<div class="grid-acciones">
+  <a class="accion" href="{% url 'miembros:registrar' %}">
+    <strong>Registrar miembro</strong>
+    <span>Alta de una persona con sus datos de contacto y familia.</span>
+  </a>
+  <a class="accion" href="{% url 'eventos:registrar' %}">
+    <strong>Crear evento</strong>
+    <span>Culto, ensayo, reunión o vigilia con fecha, hora y responsable.</span>
+  </a>
+  <a class="accion" href="{% url 'inventario:prestamos' %}">
+    <strong>Prestar equipo</strong>
+    <span>Salida temporal de instrumentos, sonido o mobiliario.</span>
+  </a>
+  <a class="accion" href="{% url 'reportes:indice' %}">
+    <strong>Ver reportes</strong>
+    <span>Asistencia, crecimiento, inventario y demografía en PDF o Excel.</span>
+  </a>
+</div>
+
+<div class="dos-columnas">
+  <section class="panel">
+    <h2>Últimos eventos</h2>
+    {% if ultimos_eventos %}
+    <table>
+      <thead>
+        <tr><th>Fecha</th><th>Evento</th><th>Tipo</th></tr>
+      </thead>
+      <tbody>
+        {% for e in ultimos_eventos %}
+        <tr>
+          <td>{{ e.fecha|date:"d/m/Y" }}</td>
+          <td><a href="{% url 'eventos:detalle' e.pk %}">{{ e.nombre }}</a></td>
+          <td>{{ e.tipo|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">Todavía no hay eventos registrados.</p>
+    {% endif %}
+    <p><a href="{% url 'eventos:lista' %}">Ver todos los eventos</a></p>
+  </section>
+
+  <section class="panel">
+    <h2>Préstamos activos</h2>
+    {% if prestamos %}
+    <table>
+      <thead>
+        <tr><th>Equipo</th><th>Responsable</th><th>Devolución</th><th>Situación</th></tr>
+      </thead>
+      <tbody>
+        {% for p in prestamos %}
+        <tr>
+          <td>{{ p.equipo.nombre }}</td>
+          <td>{{ p.miembro }}</td>
+          <td>{{ p.fecha_devolucion_prevista|date:"d/m/Y" }}</td>
+          <td>
+            {% if p.atrasado %}
+            <span class="badge atrasado">Atrasado</span>
+            {% else %}
+            <span class="badge disponible">En plazo</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vacio">No hay préstamos activos: todo el inventario está en la iglesia.</p>
+    {% endif %}
+    <p><a href="{% url 'inventario:prestamos' %}">Ver todos los préstamos</a></p>
+  </section>
+</div>
+{% endblock %}
