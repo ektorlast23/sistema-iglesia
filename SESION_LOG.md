@@ -1,5 +1,5 @@
 # Registro de sesión — Proyecto Horas Sociales (Sistema Iglesia)
-Última actualización: 19-sep-2026 (viernes, cierre Semana 2) | Stack: Python Django + MySQL
+Última actualización: 07-nov-2026 (viernes, cierre Semana 9) | Stack: Python Django + MySQL
 
 ## 1. Contexto
 - Plan: PLAN GENERAL Y DETALLADO DE SERVICIO SOCIAL (15 semanas × 20h = 300h), institución religiosa local.
@@ -101,3 +101,18 @@
 - **Verificación real** (cliente de Django sobre `cursor_demo`): 7 pantallas → 200; 9 descargas → 200; 404 de reporte inexistente y 400 de formato no soportado. Evidencias en `SEMANA_08/` (01_CONSULTAS, 02_REPORTES, 03_EXPORTACION, 04_PRUEBAS, 05_INFORME) + `Paquete_Semana08.zip` (29 archivos) + `build_semana08.py`.
 - **Hallazgo corregido**: el PDF de cualquier reporte intentaba dibujar el gráfico de crecimiento y fallaba en las tablas de 3 columnas; se agregó el guard por clave y una prueba que exporta los cuatro reportes en ambos formatos.
 - **Semana 9 planificada**: pruebas unitarias y de integración del sistema completo.
+
+## 14. Semana 9 — Pruebas Unitarias y de Integración (07-nov-2026, cerrada)
+- **Alcance**: cobertura de pruebas sobre todo el sistema sin repetir las 88 pruebas de las semanas 5-8. Se agregaron **133 pruebas** en el paquete `sistema_iglesia/tests/` (se descubren con `manage.py test`), sobre SQLite en memoria.
+- **Escenario base** (`tests/base.py`): 4 miembros (activo/inactivo/visitante), 2 ministerios, 2 eventos con asistencias (incluye un retraso y un ausente), 3 equipos (disponible, mantenimiento, baja) y 1 préstamo activo; helpers para generar POST válidos.
+- **Lógica de negocio** (`tests/test_logica_negocio.py`, 40 pruebas): disponibilidad calculada (total − préstamos activos, tope 0, baja = 0), `Prestamo.activo`/`atrasado` (vence hoy no es atraso), SET_NULL de familia, PROTECT de miembro con préstamo, CASCADE de evento→asistencias y equipo→préstamos, `unique_together` (ministerio y asistencia), totales y porcentajes de los cuatro reportes, límites de `RANGOS_EDAD` (cumpleaños de hoy ya suma), `a_fecha`, `Reporte.vacio`, `nombre_archivo` y `CATALOGO`.
+- **Integración** (`tests/test_integracion.py`, 15 pruebas): alta de miembro → evento → asistencia → reporte → PDF/Excel; duplicado por HTTP sin escribir; cambio de estado reflejado en el reporte; baja lógica que saca al miembro de los selectores; borrado de evento en cascada; préstamo → reporte → devolución → reporte; ocho descargas con firma `%PDF`/`PK`; filtros de fecha y 404 de reporte inexistente.
+- **Validación de formularios** (`tests/test_formularios.py`, 43 pruebas): matriz campo por campo de `MiembroForm`, `EventoForm`, `AsistenciaForm`, `EquipoForm` y `PrestamoForm`; incluye formatos de fecha ISO y `DD/MM/AAAA` con `LANGUAGE_CODE='es'`, widgets `date`/`time`, duplicados, longitudes y reglas cruzadas. Resumen en `SEMANA_09/03_FORMULARIOS/matriz_validaciones.txt`.
+- **Control de errores** (`tests/test_errores.py`, 21 pruebas): 404 de ids inexistentes en los cuatro módulos, 404 ante ids no numéricos, 405 en POST a la portada, 400 en formato de exportación no soportado, filtros de fecha inválidos ignorados y envíos inválidos que no crean filas.
+- **Rendimiento** (`tests/test_rendimiento.py`, 14 pruebas): número de consultas constante en listados y reportes (detección de N+1), umbrales holgados de tiempo (2 s pantallas, 5 s exportaciones) y existencia de índices de claves foráneas. Medición real con `medir_rendimiento.py` sobre MySQL 8.0.46 (`cursor_demo`, solo GET): 13 pantallas → 200, 31 consultas en total, la más lenta el reporte de demografía con 9,4 ms; listado de inventario en 2 consultas fijas.
+- **Defectos corregidos**: (1) `prestamo_id` no numérico en devoluciones → 500, ahora 404 con `_entero()`; (2) `miembro_id` no numérico en el historial → 500, ahora 404; (3) préstamo con `cantidad=0` pasaba la validación (`if equipo and cantidad:`) → ahora `is not None` y se rechaza; (4) N+1 en el listado de inventario (un SUM por equipo) → `prefetch_related("prestamos")` y `cantidad_prestada` que usa la caché cuando está precargada.
+- **Cobertura** (coverage 7.17.2, sin archivos de pruebas ni migraciones): 935 sentencias, 105 sin ejecutar, **89 %** (96,7 % si se excluye `cargar_demo.py`, que está en 0 % por diseño). Detalle en `SEMANA_09/01_UNITARIAS/cobertura.txt` y `htmlcov/`.
+- **Resultado**: `manage.py test` → **221 pruebas OK en ~3 s** (88 previas + 133 nuevas). Cero fallos.
+- **Entregables**: `SEMANA_09/` (01_UNITARIAS, 02_INTEGRACION, 03_FORMULARIOS, 04_ERRORES, 05_RENDIMIENTO, 06_INFORME con `Informe_Semana_09.docx`), `Paquete_Semana09.zip`, `build_semana09.py` y `medir_rendimiento.py`.
+- **Pendientes para la Semana 10**: decidir si un miembro inactivo puede ser responsable de un préstamo (hoy `PrestamoForm` no filtra), índices propios para `prestamos(estado, fecha)` y revisar las ramas de vistas con cobertura 92-96 %. Siguen abiertos autenticación/permisos por rol y la creación de `iglesia_db` con GRANT.
+- **Semana 10 planificada**: corrección de bugs y optimización de consultas (depuración, índices y velocidad de carga).

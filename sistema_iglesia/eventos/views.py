@@ -8,12 +8,25 @@ from datetime import date
 
 from django.contrib import messages
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
 from miembros.models import Miembro
 
 from .forms import AsistenciaEditarForm, AsistenciaForm, EventoForm
 from .models import Asistencia, Evento
+
+
+def _entero(valor):
+    """Convierte un id recibido por formulario; None si no es numerico.
+
+    Un ``miembro_id`` de texto llegaba a ``get_object_or_404`` y terminaba en
+    ValueError (500). Ahora se responde 404, como con cualquier id inexistente.
+    """
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return None
 
 
 def lista(request):
@@ -169,7 +182,10 @@ def asistencia_consulta_miembro(request):
     miembro = None
     asistencias = Asistencia.objects.none()
     if miembro_id:
-        miembro = get_object_or_404(Miembro, pk=miembro_id)
+        pk = _entero(miembro_id)
+        if pk is None:
+            raise Http404("Miembro inexistente")
+        miembro = get_object_or_404(Miembro, pk=pk)
         asistencias = Asistencia.objects.filter(miembro=miembro).select_related(
             "evento"
         ).order_by("-evento__fecha", "-evento__hora_inicio")

@@ -75,7 +75,7 @@ class PrestamoForm(forms.ModelForm):
         f_inicio = cleaned.get("fecha_prestamo")
         f_fin = cleaned.get("fecha_devolucion_prevista")
 
-        if equipo and cantidad:
+        if equipo and cantidad is not None:
             if cantidad < 1:
                 self.add_error("cantidad", "La cantidad debe ser al menos 1.")
             elif cantidad > equipo.cantidad_disponible:

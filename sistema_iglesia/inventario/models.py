@@ -43,7 +43,14 @@ class Equipo(models.Model):
 
     @property
     def cantidad_prestada(self):
-        """Unidades actualmente en prestamos activos."""
+        """Unidades actualmente en prestamos activos.
+
+        Si la instancia viene con los prestamos precargados (``prefetch_related``
+        en el listado), se suman desde la cache: asi el listado no dispara una
+        consulta por equipo (N+1 detectado en la Semana 9).
+        """
+        if "prestamos" in getattr(self, "_prefetched_objects_cache", {}):
+            return sum(p.cantidad for p in self.prestamos.all() if p.estado == "prestado")
         return (
             self.prestamos.filter(estado="prestado").aggregate(t=models.Sum("cantidad"))["t"]
             or 0

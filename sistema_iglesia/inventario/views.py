@@ -6,6 +6,7 @@ prestamos y devoluciones con control de existencias disponibles.
 
 from django.contrib import messages
 from django.db.models import Q
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -13,10 +14,22 @@ from .forms import EquipoForm, PrestamoForm
 from .models import Equipo, Prestamo
 
 
+def _entero(valor):
+    """Convierte un id recibido por formulario; None si no es numerico.
+
+    Sin esto, un ``prestamo_id`` de texto termina en ValueError y responde 500
+    en vez de 404 (control de errores, Semana 9).
+    """
+    try:
+        return int(valor)
+    except (TypeError, ValueError):
+        return None
+
+
 def lista(request):
     """Listado del inventario con busqueda por nombre o categoria."""
     q = (request.GET.get("q") or "").strip()
-    equipos = Equipo.objects.all()
+    equipos = Equipo.objects.prefetch_related("prestamos")
     if q:
         equipos = equipos.filter(
             Q(nombre__icontains=q) | Q(categoria__icontains=q) | Q(ubicacion__icontains=q)
@@ -98,7 +111,10 @@ def prestamos(request):
 def devoluciones(request):
     """Proceso de devolucion de prestamos activos."""
     if request.method == "POST":
-        prestamo = get_object_or_404(Prestamo, pk=request.POST.get("prestamo_id"))
+        prestamo_id = _entero(request.POST.get("prestamo_id"))
+        if prestamo_id is None:
+            raise Http404("Préstamo inexistente")
+        prestamo = get_object_or_404(Prestamo, pk=prestamo_id)
         if prestamo.estado == "prestado":
             prestamo.estado = "devuelto"
             prestamo.fecha_devolucion_real = timezone.localdate()
