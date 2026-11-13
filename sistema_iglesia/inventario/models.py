@@ -1,10 +1,14 @@
-"""Modelos del modulo de inventario (Semana 6).
+﻿"""Modelos del modulo de inventario (Semana 6).
 
 Equipo: catalogo de instrumentos, sonido, mobiliario y recursos.
 Prestamo: salida temporal de equipos asociada a un miembro responsable.
 
 La disponibilidad NO se almacena: se calcula restando los prestamos activos,
 para evitar descuadres entre la cantidad total y lo que esta afuera.
+
+Semana 10: Prestamo define indices compuestos (estado, fecha_devolucion_prevista)
+y (estado, fecha_prestamo) para acelerar devoluciones, prestamos activos y el
+reporte de inventario, que filtran por estado y ordenan por fecha.
 """
 
 from django.db import models
@@ -86,6 +90,16 @@ class Prestamo(models.Model):
     class Meta:
         db_table = "prestamos"
         ordering = ["-fecha_prestamo", "-id"]
+        indexes = [
+            models.Index(
+                fields=["estado", "fecha_devolucion_prevista"],
+                name="idx_prestamos_estado_devol",
+            ),
+            models.Index(
+                fields=["estado", "fecha_prestamo"],
+                name="idx_prestamos_estado_prest",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.cantidad} x {self.equipo} -> {self.miembro}"

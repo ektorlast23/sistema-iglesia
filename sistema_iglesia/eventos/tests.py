@@ -298,3 +298,34 @@ class VistaTests(TestCase):
             reverse("eventos:asistencia_consulta_miembro"), {"miembro_id": 99999}
         )
         self.assertEqual(r.status_code, 404)
+
+
+class DetalleSinNMasUnoTests(TestCase):
+    """Semana 10: el detalle del evento evalua las asistencias una sola vez."""
+
+    def setUp(self):
+        self.evento = Evento.objects.create(
+            nombre="Evento rendimiento", fecha=date(2026, 11, 1)
+        )
+        for i in range(6):
+            m = Miembro.objects.create(nombres=f"Miembro{i}", apellidos="Prueba")
+            Asistencia.objects.create(
+                miembro=m, evento=self.evento, fecha=date(2026, 11, 1), estado="presente"
+            )
+
+    def test_total_y_una_sola_consulta_de_asistencias(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        with CaptureQueriesContext(connection) as ctx:
+            r = self.client.get(reverse("eventos:detalle", args=[self.evento.pk]))
+
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context["total_asistentes"], 6)
+        sql_asistencias = [
+            q["sql"]
+            for q in ctx.captured_queries
+            if "from \"asistencias\"" in q["sql"].lower()
+            or "from `asistencias`" in q["sql"].lower()
+        ]
+        self.assertEqual(len(sql_asistencias), 1, [q["sql"] for q in ctx.captured_queries])

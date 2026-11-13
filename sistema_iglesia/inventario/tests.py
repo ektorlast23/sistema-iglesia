@@ -140,3 +140,54 @@ class InventarioCrudTests(TestCase):
         r = self.client.get(reverse("inventario:devoluciones"))
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context["prestamos"]), 1)
+
+
+class PrestamoMiembroInactivoTests(TestCase):
+    """Semana 10: un miembro inactivo no puede ser responsable de un prestamo nuevo."""
+
+    def setUp(self):
+        self.activo = Miembro.objects.create(nombres="Ana", apellidos="Activa")
+        self.inactivo = Miembro.objects.create(
+            nombres="Beto", apellidos="Inactivo", estado="inactivo"
+        )
+        self.equipo = Equipo.objects.create(
+            nombre="Parlante", categoria="sonido", cantidad=2, estado="disponible"
+        )
+
+    def _datos(self, miembro):
+        return {
+            "equipo": self.equipo.pk,
+            "miembro": miembro.pk,
+            "cantidad": 1,
+            "fecha_prestamo": date.today(),
+            "fecha_devolucion_prevista": date.today() + timedelta(days=3),
+        }
+
+    def test_alta_rechaza_miembro_inactivo(self):
+        form = PrestamoForm(data=self._datos(self.inactivo))
+        self.assertFalse(form.is_valid())
+        self.assertIn("miembro", form.errors)
+        self.assertEqual(Prestamo.objects.count(), 0)
+
+    def test_alta_acepta_miembro_activo(self):
+        form = PrestamoForm(data=self._datos(self.activo))
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_queryset_de_miembros_excluye_inactivos(self):
+        form = PrestamoForm()
+        ids = set(form.fields["miembro"].queryset.values_list("pk", flat=True))
+        self.assertIn(self.activo.pk, ids)
+        self.assertNotIn(self.inactivo.pk, ids)
+
+    def test_edicion_conserva_miembro_inactivo(self):
+        prestamo = Prestamo.objects.create(
+            equipo=self.equipo,
+            miembro=self.inactivo,
+            cantidad=1,
+            fecha_prestamo=date.today(),
+            fecha_devolucion_prevista=date.today() + timedelta(days=3),
+        )
+        form = PrestamoForm(data=self._datos(self.inactivo), instance=prestamo)
+        self.assertTrue(form.is_valid(), form.errors)
+        ids = set(form.fields["miembro"].queryset.values_list("pk", flat=True))
+        self.assertIn(self.inactivo.pk, ids)

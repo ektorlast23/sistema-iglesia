@@ -1,7 +1,11 @@
-"""Vistas del modulo de eventos (Semana 7).
+﻿"""Vistas del modulo de eventos (Semana 7).
 
 CRUD de eventos, registro de asistencia por evento y consulta del
 historial de asistencias por miembro.
+
+Semana 10: `detalle` y `lista_asistencias` evaluan el queryset una sola vez
+(`list(...)`) y calculan el total con `len`, evitando la segunda consulta que
+provocaba `count()` mas la iteracion de la plantilla.
 """
 
 from datetime import date
@@ -63,10 +67,12 @@ def registrar(request):
 def detalle(request, pk):
     """Consulta detallada de un evento y sus asistencias."""
     evento = get_object_or_404(Evento.objects.select_related("responsable"), pk=pk)
-    asistencias = evento.asistencias.select_related("miembro").order_by(
-        "miembro__apellidos", "miembro__nombres"
+    asistencias = list(
+        evento.asistencias.select_related("miembro").order_by(
+            "miembro__apellidos", "miembro__nombres"
+        )
     )
-    total_asistentes = asistencias.count()
+    total_asistentes = len(asistencias)
     return render(
         request,
         "eventos/detalle.html",
@@ -136,10 +142,12 @@ def asistencia_registrar(request, evento_id):
 def lista_asistencias(request, evento_id):
     """Listar las asistencias registradas para un evento."""
     evento = get_object_or_404(Evento, pk=evento_id)
-    asistencias = Asistencia.objects.filter(evento=evento).select_related(
-        "miembro"
-    ).order_by("miembro__apellidos", "miembro__nombres")
-    total_asistentes = asistencias.count()
+    asistencias = list(
+        Asistencia.objects.filter(evento=evento)
+        .select_related("miembro")
+        .order_by("miembro__apellidos", "miembro__nombres")
+    )
+    total_asistentes = len(asistencias)
     return render(
         request,
         "eventos/asistencias_lista.html",

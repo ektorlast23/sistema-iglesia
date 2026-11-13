@@ -1,10 +1,17 @@
-"""Formularios del modulo de inventario (Semana 6).
+﻿"""Formularios del modulo de inventario (Semana 6).
 
 EquipoForm: alta y edicion del catalogo de equipos.
 PrestamoForm: registro de prestamos con validacion de existencias.
+
+Semana 10: PrestamoForm deja de ofrecer miembros inactivos como responsable de
+un prestamo NUEVO. En la edicion se conserva el miembro actual aunque haya
+pasado a inactivo, para no invalidar registros historicos.
 """
 
 from django import forms
+from django.db.models import Q
+
+from miembros.models import Miembro
 
 from .models import Equipo, Prestamo
 
@@ -67,6 +74,14 @@ class PrestamoForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Solo equipos que pueden prestarse en este momento.
         self.fields["equipo"].queryset = Equipo.objects.exclude(estado="baja")
+        # Semana 10: un miembro inactivo no puede recibir un prestamo NUEVO.
+        # En edicion se conserva el miembro actual para no romper el registro.
+        miembros = Miembro.objects.filter(estado="activo")
+        if self.instance and self.instance.pk and self.instance.miembro_id:
+            miembros = Miembro.objects.filter(
+                Q(estado="activo") | Q(pk=self.instance.miembro_id)
+            )
+        self.fields["miembro"].queryset = miembros.order_by("apellidos", "nombres")
 
     def clean(self):
         cleaned = super().clean()
@@ -74,6 +89,18 @@ class PrestamoForm(forms.ModelForm):
         cantidad = cleaned.get("cantidad")
         f_inicio = cleaned.get("fecha_prestamo")
         f_fin = cleaned.get("fecha_devolucion_prevista")
+        miembro = cleaned.get("miembro")
+
+        # Semana 10: defensa extra (ademas del queryset filtrado).
+        if (
+            self.instance.pk is None
+            and miembro is not None
+            and miembro.estado != "activo"
+        ):
+            self.add_error(
+                "miembro",
+                "No se puede asignar un préstamo a un miembro inactivo.",
+            )
 
         if equipo and cantidad is not None:
             if cantidad < 1:

@@ -1,5 +1,5 @@
 # Registro de sesión — Proyecto Horas Sociales (Sistema Iglesia)
-Última actualización: 07-nov-2026 (viernes, cierre Semana 9) | Stack: Python Django + MySQL
+Última actualización: 12-nov-2026 (cierre Semana 10) | Stack: Python Django + MySQL
 
 ## 1. Contexto
 - Plan: PLAN GENERAL Y DETALLADO DE SERVICIO SOCIAL (15 semanas × 20h = 300h), institución religiosa local.
@@ -126,3 +126,14 @@
 - **Prueba ajustada**: `test_portada_no_toca_la_base` (que exigía cero consultas) se reemplazó por `test_portada_usa_un_numero_fijo_de_consultas`: la portada hace como máximo 12 consultas y el número no cambia al crear 20 miembros más.
 - **Resultado**: suite completa **221 pruebas OK**; cobertura **948 sentencias, 89 %** (96,8 % sin `cargar_demo.py`). Medición contra MySQL: portada en **11 consultas y 13,6 ms**. Layout verificado por DOM: viewport 852 px → tarjetas en 2 columnas y alerta a todo el ancho.
 - **Evidencias regeneradas**: `SEMANA_09/01_UNITARIAS` (`salida_suite_completa.txt`, `cobertura.txt`, `htmlcov/`, `resumen_pruebas.txt`), `SEMANA_09/05_RENDIMIENTO` (`pruebas_rendimiento.txt`, `medicion_mysql.txt`), `Informe_Semana_09.docx` y `Paquete_Semana09.zip`.
+
+## 16. Semana 10 — Corrección de Bugs y Optimización de Consultas (12-nov-2026, cerrada)
+- **Parte A (commit `5be7b1a`, ya integrada)**: endurecimiento de acceso — `LoginObligatorioMiddleware` (login obligatorio salvo login/salud), `PermisosPorRolMiddleware` con roles Administrador/Secretaría/Encargado de inventario/Consulta (`config/permisos.py`), comando `crear_roles`, plantillas login/logout/403 y settings de producción (DEBUG/ALLOWED_HOSTS/SECRET_KEY por entorno). `tests/test_permisos.py` (13 pruebas → 234 totales). Se documenta aquí aunque el commit lo etiquetara como Semana 10.
+- **Parte B (alcance oficial del plan)**: depuración + índices + velocidad.
+- **Depuración**: `PrestamoForm` ya no ofrece miembros inactivos como responsable de un préstamo NUEVO; en edición conserva el miembro actual (queryset activos OR pk actual) y `clean()` rechaza inactivo en alta. `eventos/views.py` detalle y lista de asistencias evalúan el queryset una vez (`list`+`len`) en vez de `count()`+iteración (2→1 consulta a `asistencias`).
+- **Índices**: migración `inventario.0002_prestamo_idx_prestamos_estado_devol_and_more` con `idx_prestamos_estado_devol (estado, fecha_devolucion_prevista)` e `idx_prestamos_estado_prest (estado, fecha_prestamo)`. `EXPLAIN` pasó de `type=ALL, key=NULL, Using filesort` a `type=ref, key=idx_prestamos_estado_devol, Using index`.
+- **Consultas**: auditoría sin N+1 adicionales; listados con select_related/prefetch_related; reportes con agregados resueltos en SQL.
+- **Rendimiento**: `medir_rendimiento.py` 13 pantallas → 42 consultas antes y después (ninguna de esas 13 era la redundante); mejora verificable en el plan de ejecución y en el detalle (2→1 consulta a asistencias). 7/7 rutas en vivo → 200.
+- **Pruebas**: `manage.py test` → **239 pruebas OK** (234 previas + 5 regresiones de esta semana).
+- **Entregables**: `SEMANA_10/` (01_DEPURACION, 02_INDICES, 03_CONSULTAS, 04_RENDIMIENTO, 05_PRUEBAS, 06_INFORME con `Informe_Semana_10.docx`) + `Paquete_Semana10.zip` + `build_semana10.py`.
+- **Semana 11 planificada**: pruebas de usabilidad con usuarios reales (ajustes de interfaz).
