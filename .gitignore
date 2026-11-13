@@ -22,3 +22,18 @@ Thumbs.db
 # Word/temporales de Office
 ~$*.docx
 ~$*.xlsx
+
+# Evidencias academicas semanales (no forman parte del proyecto)
+Paquete_Semana*.zip
+Semana_02/
+SEMANA_03/
+SEMANA_04/
+SEMANA_05/
+SEMANA_06/
+SEMANA_07/
+SEMANA_08/
+SEMANA_09/
+SEMANA_10/
+build_semana*.py
+capturar_semana*.py
+generar_evidencias_semana08.py
