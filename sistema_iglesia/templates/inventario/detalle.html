@@ -14,7 +14,7 @@
 </table>
 
 <p>
-  <a class="boton" href="{% url 'inventario:editar' equipo.pk %}">Editar</a>
+  {% if permisos.puede_editar_inventario %}<a class="boton" href="{% url 'inventario:editar' equipo.pk %}">Editar</a>{% endif %}
   <a class="cancelar" href="{% url 'inventario:lista' %}">Volver al inventario</a>
 </p>
 

@@ -6,6 +6,9 @@ registraron, cuántas unidades de inventario están disponibles y qué préstamo
 siguen afuera. Todas las cifras salen de la base, sin datos quemados.
 """
 
+from django.contrib.auth.decorators import login_not_required
+from django.db import DatabaseError, connection
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_GET
@@ -13,6 +16,24 @@ from django.views.decorators.http import require_GET
 from eventos.models import Asistencia, Evento
 from inventario.models import Equipo, Prestamo
 from miembros.models import Miembro
+
+
+@login_not_required
+@require_GET
+def salud(request):
+    """Chequeo de salud para el proxy y para monitoreo externo (sin login)."""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+            cursor.fetchone()
+    except DatabaseError:
+        return JsonResponse({"estado": "error", "base": "no responde"}, status=503)
+    return JsonResponse({"estado": "ok", "base": "ok"})
+
+
+def error_403(request, exception=None):
+    """Página de acceso denegado (rol de solo lectura o sin permiso)."""
+    return render(request, "403.html", status=403)
 
 
 @require_GET

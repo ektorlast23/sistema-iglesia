@@ -19,11 +19,13 @@
       <td>{{ p.fecha_prestamo }}</td>
       <td>{{ p.fecha_devolucion_prevista }}{% if p.atrasado %} <strong>(atrasado)</strong>{% endif %}</td>
       <td>
+        {% if permisos.puede_editar_inventario %}
         <form method="post" style="display:inline">
           {% csrf_token %}
           <input type="hidden" name="prestamo_id" value="{{ p.pk }}">
           <button class="boton" type="submit">Registrar devolución</button>
         </form>
+        {% else %}—{% endif %}
       </td>
     </tr>
     {% empty %}

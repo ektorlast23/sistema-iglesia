@@ -2,7 +2,7 @@
 {% block titulo %}Miembros - Sistema Iglesia{% endblock %}
 {% block contenido %}
 <h1>Miembros</h1>
-<p><a class="boton" href="{% url 'miembros:registrar' %}">+ Nuevo miembro</a></p>
+{% if permisos.puede_editar_miembros %}<p><a class="boton" href="{% url 'miembros:registrar' %}">+ Nuevo miembro</a></p>{% endif %}
 <table>
   <thead>
     <tr><th>ID</th><th>Nombre</th><th>Teléfono</th><th>Estado</th></tr>

@@ -1,0 +1,51 @@
+{% load static %}<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ingresar - Sistema Iglesia</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #EAF2FF; color: #222; }
+    .caja { background: #fff; width: 100%; max-width: 380px; padding: 28px 30px 24px; border-radius: 12px; border-top: 6px solid #1F4E79; box-shadow: 0 6px 24px rgba(31, 78, 121, .18); }
+    h1 { font-size: 20px; color: #1F4E79; margin: 0 0 4px; }
+    p.bajada { margin: 0 0 20px; color: #555; font-size: 14px; }
+    label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 14px; }
+    input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #B9C8D8; border-radius: 6px; font-size: 15px; }
+    input:focus { outline: 2px solid #7FA8D4; border-color: #1F4E79; }
+    button { width: 100%; margin-top: 18px; padding: 11px; background: #1F4E79; color: #fff; border: 0; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; }
+    button:hover { background: #163a5a; }
+    .error { background: #FFEBEE; border: 1px solid #C62828; color: #8E1B1B; padding: 8px 10px; border-radius: 6px; font-size: 13px; margin-bottom: 14px; }
+    .pie { margin-top: 18px; text-align: center; font-size: 12px; color: #777; }
+  </style>
+</head>
+<body>
+  <main class="caja">
+    <h1>Sistema de Gestión</h1>
+    <p class="bajada">Iglesia Local · Ingresá con tu cuenta</p>
+
+    {% if form.errors %}
+    <div class="error">Usuario o contraseña incorrectos. Revisá los datos e intentá de nuevo.</div>
+    {% endif %}
+    {% if next and user.is_authenticated %}
+    <div class="error">Tu cuenta no tiene acceso a esa pantalla.</div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+      {% csrf_token %}
+      <p>
+        <label for="id_username">Usuario</label>
+        <input type="text" name="username" id="id_username" autofocus required autocomplete="username">
+      </p>
+      <p>
+        <label for="id_password">Contraseña</label>
+        <input type="password" name="password" id="id_password" required autocomplete="current-password">
+      </p>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button type="submit">Ingresar</button>
+    </form>
+
+    <p class="pie">¿No tenés cuenta? Pedile acceso al administrador del sistema.</p>
+  </main>
+</body>
+</html>

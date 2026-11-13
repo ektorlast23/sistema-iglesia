@@ -13,10 +13,12 @@
 </table>
 
 <p>
+  {% if permisos.puede_editar_eventos %}
   <a class="boton" href="{% url 'eventos:editar' evento.pk %}">Editar evento</a>
   <a class="boton" href="{% url 'eventos:asistencia_registrar' evento.pk %}">Registrar asistencia</a>
+  {% endif %}
   <a class="boton" href="{% url 'eventos:lista_asistencias' evento.pk %}">Ver todas las asistencias</a>
-  <a class="cancelar" href="{% url 'eventos:eliminar' evento.pk %}">Eliminar evento</a>
+  {% if permisos.es_admin %}<a class="cancelar" href="{% url 'eventos:eliminar' evento.pk %}">Eliminar evento</a>{% endif %}
 </p>
 
 <h2>Asistencias ({{ total_asistentes }} asistente{{ total_asistentes|pluralize:"s" }})</h2>
@@ -32,7 +34,7 @@
       <td>{{ a.fecha|date:"d/m/Y" }}</td>
       <td>{{ a.get_estado_display }}</td>
       <td>{{ a.observaciones|default:"—" }}</td>
-      <td><a href="{% url 'eventos:asistencia_editar' a.pk %}">Editar</a></td>
+      <td>{% if permisos.puede_editar_eventos %}<a href="{% url 'eventos:asistencia_editar' a.pk %}">Editar</a>{% else %}—{% endif %}</td>
     </tr>
     {% empty %}
     <tr><td colspan="6">Sin asistencias registradas.</td></tr>

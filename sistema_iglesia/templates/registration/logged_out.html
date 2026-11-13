@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block titulo %}Sesión cerrada - Sistema Iglesia{% endblock %}
+{% block contenido %}
+<h1>Sesión cerrada</h1>
+<p>Saliste del sistema correctamente.</p>
+<p><a class="boton" href="{% url 'login' %}">Volver a ingresar</a></p>
+{% endblock %}

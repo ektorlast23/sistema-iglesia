@@ -13,8 +13,8 @@
   <tr><td>Fecha de registro</td><td>{{ miembro.fecha_ingreso|default:"—" }}</td></tr>
 </table>
 <p>
-  <a class="boton" href="{% url 'miembros:editar' miembro.pk %}">Editar</a>
-  <a class="cancelar" href="{% url 'miembros:eliminar' miembro.pk %}">Dar de baja</a>
+  {% if permisos.puede_editar_miembros %}<a class="boton" href="{% url 'miembros:editar' miembro.pk %}">Editar</a>{% endif %}
+  {% if permisos.es_admin %}<a class="cancelar" href="{% url 'miembros:eliminar' miembro.pk %}">Dar de baja</a>{% endif %}
   <a href="{% url 'miembros:lista' %}">Volver a la lista</a>
 </p>
 {% endblock %}

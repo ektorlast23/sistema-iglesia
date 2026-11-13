@@ -3,7 +3,7 @@
 {% block contenido %}
 <h1>Eventos</h1>
 <p>
-  <a class="boton" href="{% url 'eventos:registrar' %}">+ Nuevo evento</a>
+  {% if permisos.puede_editar_eventos %}<a class="boton" href="{% url 'eventos:registrar' %}">+ Nuevo evento</a>{% endif %}
   <a class="boton" href="{% url 'eventos:asistencia_consulta_miembro' %}">Asistencias por miembro</a>
 </p>
 

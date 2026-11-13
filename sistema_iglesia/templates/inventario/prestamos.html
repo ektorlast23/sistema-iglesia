@@ -3,6 +3,7 @@
 {% block contenido %}
 <h1>Préstamos de equipos</h1>
 
+{% if permisos.puede_editar_inventario %}
 <h2>Registrar préstamo</h2>
 <form method="post">
   {% csrf_token %}
@@ -10,6 +11,7 @@
   <button class="boton" type="submit">Registrar préstamo</button>
   <a class="cancelar" href="{% url 'inventario:lista' %}">Volver al inventario</a>
 </form>
+{% endif %}
 
 <h2>Préstamos registrados</h2>
 <table>

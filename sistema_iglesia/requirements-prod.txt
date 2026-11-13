@@ -1,0 +1,4 @@
+# Producción: servidor de aplicación para Linux.
+# Instalar con:  pip install -r requirements-prod.txt
+-r requirements.txt
+gunicorn>=23,<24

@@ -47,18 +47,24 @@
 
 <h2>Accesos rápidos</h2>
 <div class="grid-acciones">
+  {% if permisos.puede_editar_miembros %}
   <a class="accion" href="{% url 'miembros:registrar' %}">
     <strong>Registrar miembro</strong>
     <span>Alta de una persona con sus datos de contacto y familia.</span>
   </a>
+  {% endif %}
+  {% if permisos.puede_editar_eventos %}
   <a class="accion" href="{% url 'eventos:registrar' %}">
     <strong>Crear evento</strong>
     <span>Culto, ensayo, reunión o vigilia con fecha, hora y responsable.</span>
   </a>
+  {% endif %}
+  {% if permisos.puede_editar_inventario %}
   <a class="accion" href="{% url 'inventario:prestamos' %}">
     <strong>Prestar equipo</strong>
     <span>Salida temporal de instrumentos, sonido o mobiliario.</span>
   </a>
+  {% endif %}
   <a class="accion" href="{% url 'reportes:indice' %}">
     <strong>Ver reportes</strong>
     <span>Asistencia, crecimiento, inventario y demografía en PDF o Excel.</span>

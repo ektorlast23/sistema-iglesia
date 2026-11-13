@@ -2,7 +2,7 @@
 {% block titulo %}Inventario - Sistema Iglesia{% endblock %}
 {% block contenido %}
 <h1>Inventario de equipos</h1>
-<p><a class="boton" href="{% url 'inventario:registrar' %}">+ Nuevo equipo</a>
+<p>{% if permisos.puede_editar_inventario %}<a class="boton" href="{% url 'inventario:registrar' %}">+ Nuevo equipo</a>{% endif %}
    <a class="boton" href="{% url 'inventario:prestamos' %}">Préstamos</a>
    <a class="boton" href="{% url 'inventario:devoluciones' %}">Devoluciones</a></p>
 
